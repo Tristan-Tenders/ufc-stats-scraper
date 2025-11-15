@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import time
 import random
-from tqdm import tqdm
+import os
 import json
 
 letters = "abcdefghijklmnopqrstuvwxyz"
@@ -78,6 +78,7 @@ def fetch():
 
 
 def save_json():
+    os.makedirs("stats", exist_ok=True)
     with open("stats/fighter_links.json", "w", encoding="utf-8") as f:
         json.dump(list(fighter_links), f, indent=2)
     print(f"[+] Saved {len(fighter_links)} fighter links to fighter_links.json")
