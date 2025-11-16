@@ -41,6 +41,19 @@ def fetch_page(url, tries=3, delay_range=(4, 12)):
 
     return None
 
+def append_fighter(fighter_info, file_path="Stats/fighter_stats.json"):
+    if os.path.exists(file_path):
+        with open(file_path, "r") as f:
+            try:
+                fighters = json.load(f)
+            except json.JSONDecodeError:
+                fighters = []
+    else:
+        fighters = []
+    fighters.append(fighter_info)
+    with open(file_path, "w") as f:
+        json.dump(fighters, f, indent=2)
+
 
 links=[
   "http://ufcstats.com/fighter-details/12f91bfa8f1f723b",
@@ -68,13 +81,11 @@ def fetch_stats():
                     Height = info.find("i").next_sibling.strip()
                     print("found a height")
 
-    fighter_info = {
-        "Name": name,
-        "Height": Height,
-    }
-    
-    with open("Stats/fighter_stats.json","a") as f:
-        f.write(json.dumps(fighter_info) + "\n")
+        fighter_info = {
+            "Name": name,
+            "Height": Height,
+        }
+        append_fighter(fighter_info)
         
 
 if __name__ == "__main__":
