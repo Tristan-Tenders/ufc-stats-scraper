@@ -4,7 +4,7 @@ import time
 import random
 import os
 import json
-from datetime import date
+from datetime import datetime, date
 
 USER_AGENTS = [
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
@@ -69,24 +69,52 @@ def fetch_stats():
         soup = fetch_page(link)
         if soup:
             print(f"\n--- Processing link: {link} ---")
-            name = soup.find("span", class_="b-content__title-highlight")
-            name = name.text.strip()
-            print(f"name is {name}")
+            Name = soup.find("span", class_="b-content__title-highlight")
+            Name = Name.text.strip()
+            print(f"Name: {Name}")
 
             infos = soup.find_all("li", class_="b-list__box-list-item_type_block")
 
             for info in infos:
+
                 label = info.find("i").text.strip()
+
                 if label.startswith("Height"):
+
                     Height = info.find("i").next_sibling.strip()
                     for char in ["'", "/",'"']:
                         Height = Height.replace(char, "")
                     Height = Height.replace(" ","'")
-                    print(f" height is{Height}")
+                    print(f"Height: {Height}")
+
+                if label.startswith("Weight"):
+                    Weight = info.find("i").next_sibling.strip()
+                    print(f"Weight: {Weight}")
+
+                if label.startswith("Reach"):
+                    Reach = info.find("i").next_sibling.strip()
+                    print(f"Reach: {Reach}")
+
+                if label.startswith("STANCE"):
+                    Stance = info.find("i").next_sibling.strip()
+                    print(f"Stance: {Stance}")
+                
+                if label.startswith("DOB"):
+                    Age = info.find("i").next_sibling.strip()
+                    birth_date = datetime.strptime(Age, "%b %d, %Y").date()
+                    today = date.today()
+                    age = today.year - birth_date.year
+                    if (today.month, today.day) < (birth_date.month, birth_date.day):
+                        age -= 1
+                    print(f"Age: {Age}")
 
         fighter_info = {
-            "Name": name,
+            "Name": Name,
             "Height": Height,
+            "Weight": Weight,
+            "Reach": Reach,
+            "Stance": Stance,
+            "Age": Age,
         }
         append_fighter(fighter_info)
         
