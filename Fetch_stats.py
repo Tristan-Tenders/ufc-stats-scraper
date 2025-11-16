@@ -79,7 +79,10 @@ def fetch_stats():
                 label = info.find("i").text.strip()
                 if label.startswith("Height"):
                     Height = info.find("i").next_sibling.strip()
-                    print("found a height")
+                    for char in ["'", "/",'"']:
+                        Height = Height.replace(char, "")
+                    Height = Height.replace(" ","'")
+                    print(f" height is{Height}")
 
         fighter_info = {
             "Name": name,
