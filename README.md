@@ -1,13 +1,21 @@
 # UFC Stats Scraper
 
-A simple Python scraper that grabs fighter profile links from UFCStats.com. It goes through the alphabet, collects all the fighter URLs, and saves them to a JSON file.
-
+### `Create_links.py` ###
 ## What it does
 
 - Goes through UFCStats.com fighter listings (A-Z)
 - Collects all fighter profile links
 - Saves everything to `fighter_links.json`
-- Has several delays to not get blocked by the server
+
+
+### `Fetch_stats.py` ###
+## What it does
+
+- Goes through all links in `fighter_links.json`
+- Scrapes Fighter info like name,age,reach...
+- Saves everything to `fighter_stats.json`
+
+
 
 ## Setup
 
@@ -18,10 +26,10 @@ pip install -r requirements.txt
 ## Run it
 
 ```bash
-python Stats.py
+python Create_links.py
+python Fetch_stats.py
 ```
 
-The script will show progress as it goes. It saves after each letter, so you won't lose everything if something goes wrong.
 
 ## What you'll get
 
