@@ -82,31 +82,34 @@ def fetch_stats():
                 if label.startswith("Height"):
 
                     Height = info.find("i").next_sibling.strip()
-                    for char in ["'", "/",'"']:
+                    for char in ["'", "/",'"',"/"]:
                         Height = Height.replace(char, "")
                     Height = Height.replace(" ","'")
                     print(f"Height: {Height}")
 
-                if label.startswith("Weight"):
+                elif label.startswith("Weight"):
                     Weight = info.find("i").next_sibling.strip()
                     print(f"Weight: {Weight}")
 
-                if label.startswith("Reach"):
+                elif label.startswith("Reach"):
                     Reach = info.find("i").next_sibling.strip()
                     print(f"Reach: {Reach}")
 
-                if label.startswith("STANCE"):
+                elif label.startswith("STANCE"):
                     Stance = info.find("i").next_sibling.strip()
                     print(f"Stance: {Stance}")
                 
-                if label.startswith("DOB"):
+                elif label.startswith("DOB"):
                     Age = info.find("i").next_sibling.strip()
-                    birth_date = datetime.strptime(Age, "%b %d, %Y").date()
-                    today = date.today()
-                    age = today.year - birth_date.year
-                    if (today.month, today.day) < (birth_date.month, birth_date.day):
-                        age -= 1
-                    print(f"Age: {Age}")
+                    try:
+                        birth_date = datetime.strptime(Age, "%b %d, %Y").date()
+                        today = date.today()
+                        age = today.year - birth_date.year
+                        if (today.month, today.day) < (birth_date.month, birth_date.day):
+                            age -= 1
+                    except Exception:
+                        age = "--"
+                    print(f"Age: {age}")
 
         fighter_info = {
             "Name": Name,
@@ -114,7 +117,7 @@ def fetch_stats():
             "Weight": Weight,
             "Reach": Reach,
             "Stance": Stance,
-            "Age": Age,
+            "Age": age,
         }
         append_fighter(fighter_info)
         
