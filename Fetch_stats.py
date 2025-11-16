@@ -4,8 +4,7 @@ import time
 import random
 import os
 import json
-
-letters = "abcdefghijklmnopqrstuvwxyz"
+from datetime import date
 
 USER_AGENTS = [
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
@@ -42,47 +41,41 @@ def fetch_page(url, tries=3, delay_range=(4, 12)):
 
     return None
 
-fighter_links = set()
-count = 1
 
-def fetch():
-    global count
-    for letter in letters:
-        BASE_URL = f"http://ufcstats.com/statistics/fighters?char={letter}&page=all"
-        soup = fetch_page(BASE_URL)
-
+links=[
+  "http://ufcstats.com/fighter-details/12f91bfa8f1f723b",
+  "http://ufcstats.com/fighter-details/9d62c2d8ee151f08",
+  "http://ufcstats.com/fighter-details/5717efc6f271cd52",
+  "http://ufcstats.com/fighter-details/6dbb1107de9a4a08",
+  "http://ufcstats.com/fighter-details/dde70a112e053a6c",
+  "http://ufcstats.com/fighter-details/e56daf7725a0b5ab"]
+def fetch_stats():
+    # with open("Stats/fighter_links.json","r") as f:
+    #     links = json.load(f)
+    for link in links:
+        soup = fetch_page(link)
         if soup:
-            print(f"\n--- Processing letter: {letter.upper()} ---")
-            rows = soup.find_all("tr", class_="b-statistics__table-row")
+            print(f"\n--- Processing link: {link} ---")
+            name = soup.find("span", class_="b-content__title-highlight")
+            name = name.text.strip()
+            print(f"name is {name}")
 
-            for row in rows:
-                last_name_link = row.find("a", class_="b-link b-link_style_black")
-                if last_name_link:
-                    print(f'Adding person number: {count}')
-                    count += 1
-                    fighter_links.add(last_name_link["href"])
+            infos = soup.find_all("li", class_="b-list__box-list-item_type_block")
 
-                    
-                    time.sleep(random.uniform(0.3, 1.2))
-        else:
-            print("[!] Failed to fetch the page.")
+            for info in infos:
+                label = info.find("i").text.strip()
+                if label.startswith("Height"):
+                    Height = info.find("i").next_sibling.strip()
+                    print("found a height")
 
-        print(f"Total collected so far: {len(fighter_links)}")
-        print(f"Saving current files")
-        save_json()
-
+    fighter_info = {
+        "Name": name,
+        "Height": Height,
+    }
+    
+    with open("Stats/fighter_stats.json","a") as f:
+        f.write(json.dumps(fighter_info) + "\n")
         
-        long_sleep = random.uniform(7, 15)
-        print(f"Sleeping {long_sleep:.2f}s before next letter...")
-        time.sleep(long_sleep)
-
-
-def save_json():
-    os.makedirs("stats", exist_ok=True)
-    with open("stats/fighter_links.json", "w", encoding="utf-8") as f:
-        json.dump(list(fighter_links), f, indent=2)
-    print(f"[+] Saved {len(fighter_links)} fighter links to fighter_links.json")
 
 if __name__ == "__main__":
-    print("Starting Scraper...")
-    fetch()
+    fetch_stats()
