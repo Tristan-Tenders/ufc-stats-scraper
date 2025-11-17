@@ -5,6 +5,7 @@ import random
 import os
 import json
 from datetime import datetime, date
+from Dynamic_stats import fetch_recent_fights
 
 USER_AGENTS = [
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
@@ -141,49 +142,47 @@ def fetch_stats():
             cstats = soup.find_all("li", class_="b-list__box-list-item b-list__box-list-item_type_block")
             Stats = {}
 
-        for stat_item in cstats:
-            label_tag = stat_item.find("i")
-            if not label_tag:
-                continue
-            label = label_tag.text.strip()
-            value = label_tag.next_sibling.strip() if label_tag.next_sibling else None
+            for stat_item in cstats:
+                label_tag = stat_item.find("i")
+                if not label_tag:
+                    continue
+                label = label_tag.text.strip()
+                value = label_tag.next_sibling.strip() if label_tag.next_sibling else None
 
-            if not value or value == "--":
-                continue
+                if not value or value == "--":
+                    continue
 
-            if label.startswith("SLpM"):
-                try:
+                if label.startswith("SLpM"):
+                    try:
+                        Stats["SLpM"] = float(value)
+                    except:
+                        Stats["SLpM"] = None
+                if label.startswith("SLpM"):
                     Stats["SLpM"] = float(value)
-                except:
-                    Stats["SLpM"] = None
-            if label.startswith("SLpM"):
-                Stats["SLpM"] = float(value)
-                print(f"SLpM: {Stats['SLpM']}")
-            elif label.startswith("Str. Acc."):
-                Stats["StrAcc"] = float(value.strip('%')) / 100
-                print(f"Str. Acc.: {Stats['StrAcc']}")
-            elif label.startswith("SApM"):
-                Stats["SApM"] = float(value)
-                print(f"SApM: {Stats['SApM']}")
-            elif label.startswith("Str. Def"):
-                Stats["StrDef"] = float(value.strip('%')) / 100
-                print(f"Str. Def.: {Stats['StrDef']}")
-            elif label.startswith("TD Avg."):
-                Stats["TDAvg"] = float(value)
-                print(f"TD Avg.: {Stats['TDAvg']}")
-            elif label.startswith("TD Acc."):
-                Stats["TDAcc"] = float(value.strip('%')) / 100
-                print(f"TD Acc.: {Stats['TDAcc']}")
-            elif label.startswith("TD Def."):
-                Stats["TDDef"] = float(value.strip('%')) / 100
-                print(f"TD Def.: {Stats['TDDef']}")
-            elif label.startswith("Sub. Avg."):
-                Stats["SubAvg"] = float(value)
-                print(f"Sub. Avg.: {Stats['SubAvg']}")
-
-
-
-
+                    print(f"SLpM: {Stats['SLpM']}")
+                elif label.startswith("Str. Acc."):
+                    Stats["StrAcc"] = float(value.strip('%')) / 100
+                    print(f"Str. Acc.: {Stats['StrAcc']}")
+                elif label.startswith("SApM"):
+                    Stats["SApM"] = float(value)
+                    print(f"SApM: {Stats['SApM']}")
+                elif label.startswith("Str. Def"):
+                    Stats["StrDef"] = float(value.strip('%')) / 100
+                    print(f"Str. Def.: {Stats['StrDef']}")
+                elif label.startswith("TD Avg."):
+                    Stats["TDAvg"] = float(value)
+                    print(f"TD Avg.: {Stats['TDAvg']}")
+                elif label.startswith("TD Acc."):
+                    Stats["TDAcc"] = float(value.strip('%')) / 100
+                    print(f"TD Acc.: {Stats['TDAcc']}")
+                elif label.startswith("TD Def."):
+                    Stats["TDDef"] = float(value.strip('%')) / 100
+                    print(f"TD Def.: {Stats['TDDef']}")
+                elif label.startswith("Sub. Avg."):
+                    Stats["SubAvg"] = float(value)
+                    print(f"Sub. Avg.: {Stats['SubAvg']}")
+            
+            RecentFights = fetch_recent_fights(soup, max_fights=3)
 
         fighter_info = {
             "Name": Name,
@@ -193,6 +192,7 @@ def fetch_stats():
             "Stance": Stance,
             "Age": age,
             "CareerStats": Stats,
+            "RecentFights": RecentFights,
         }
         append_fighter(fighter_info)
         
