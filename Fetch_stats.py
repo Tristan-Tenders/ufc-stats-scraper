@@ -59,6 +59,8 @@ def height_to_inches(h):
     feet,inches = h.split()
     return int(feet) * 12 + int(inches)
 
+
+
 links=[
   "http://ufcstats.com/fighter-details/12f91bfa8f1f723b",
   "http://ufcstats.com/fighter-details/9d62c2d8ee151f08",
@@ -136,6 +138,53 @@ def fetch_stats():
                         age = None
                     print(f"Age: {age}")
 
+            cstats = soup.find_all("li", class_="b-list__box-list-item b-list__box-list-item_type_block")
+            Stats = {}
+
+        for stat_item in cstats:
+            label_tag = stat_item.find("i")
+            if not label_tag:
+                continue
+            label = label_tag.text.strip()
+            value = label_tag.next_sibling.strip() if label_tag.next_sibling else None
+
+            if not value or value == "--":
+                continue
+
+            if label.startswith("SLpM"):
+                try:
+                    Stats["SLpM"] = float(value)
+                except:
+                    Stats["SLpM"] = None
+            if label.startswith("SLpM"):
+                Stats["SLpM"] = float(value)
+                print(f"SLpM: {Stats['SLpM']}")
+            elif label.startswith("Str. Acc."):
+                Stats["StrAcc"] = float(value.strip('%')) / 100
+                print(f"Str. Acc.: {Stats['StrAcc']}")
+            elif label.startswith("SApM"):
+                Stats["SApM"] = float(value)
+                print(f"SApM: {Stats['SApM']}")
+            elif label.startswith("Str. Def"):
+                Stats["StrDef"] = float(value.strip('%')) / 100
+                print(f"Str. Def.: {Stats['StrDef']}")
+            elif label.startswith("TD Avg."):
+                Stats["TDAvg"] = float(value)
+                print(f"TD Avg.: {Stats['TDAvg']}")
+            elif label.startswith("TD Acc."):
+                Stats["TDAcc"] = float(value.strip('%')) / 100
+                print(f"TD Acc.: {Stats['TDAcc']}")
+            elif label.startswith("TD Def."):
+                Stats["TDDef"] = float(value.strip('%')) / 100
+                print(f"TD Def.: {Stats['TDDef']}")
+            elif label.startswith("Sub. Avg."):
+                Stats["SubAvg"] = float(value)
+                print(f"Sub. Avg.: {Stats['SubAvg']}")
+
+
+
+
+
         fighter_info = {
             "Name": Name,
             "Height": Height,
@@ -143,6 +192,7 @@ def fetch_stats():
             "Reach": Reach,
             "Stance": Stance,
             "Age": age,
+            "CareerStats": Stats,
         }
         append_fighter(fighter_info)
         
