@@ -42,6 +42,7 @@ def fetch_page(url, tries=3, delay_range=(4, 12)):
     return None
 
 def append_fighter(fighter_info, file_path="Stats/fighter_stats.json"):
+    os.makedirs("stats", exist_ok=True)
     if os.path.exists(file_path):
         with open(file_path, "r") as f:
             try:
@@ -54,6 +55,7 @@ def append_fighter(fighter_info, file_path="Stats/fighter_stats.json"):
     with open(file_path, "w") as f:
         json.dump(fighters, f, indent=2)
 
+def height_to_inches(h):
     feet,inches = h.split()
     return int(feet) * 12 + int(inches)
 
