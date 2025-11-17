@@ -59,6 +59,8 @@ def height_to_inches(h):
     feet,inches = h.split()
     return int(feet) * 12 + int(inches)
 
+
+
 links=[
   "http://ufcstats.com/fighter-details/12f91bfa8f1f723b",
   "http://ufcstats.com/fighter-details/9d62c2d8ee151f08",
@@ -135,6 +137,10 @@ def fetch_stats():
                     except Exception:
                         age = None
                     print(f"Age: {age}")
+
+
+
+
 
         fighter_info = {
             "Name": Name,
