@@ -54,6 +54,8 @@ def append_fighter(fighter_info, file_path="Stats/fighter_stats.json"):
     with open(file_path, "w") as f:
         json.dump(fighters, f, indent=2)
 
+    feet,inches = h.split()
+    return int(feet) * 12 + int(inches)
 
 links=[
   "http://ufcstats.com/fighter-details/12f91bfa8f1f723b",
@@ -80,23 +82,44 @@ def fetch_stats():
                 label = info.find("i").text.strip()
 
                 if label.startswith("Height"):
-
                     Height = info.find("i").next_sibling.strip()
-                    for char in ["'", "/",'"',"/"]:
-                        Height = Height.replace(char, "")
-                    Height = Height.replace(" ","'")
+                    if Height == "--":
+                        Height = None
+                    else:
+                        for char in ["'", "/",'"',"/"]:
+                            Height = Height.replace(char, "")
+                            Height = Height.replace(" '","")
+                        Height = height_to_inches(Height)
+
                     print(f"Height: {Height}")
 
                 elif label.startswith("Weight"):
                     Weight = info.find("i").next_sibling.strip()
+                    if Weight == "--":
+                        Weight = None
+                    else: 
+                        Weight = int(Weight.replace(" lbs.",""))
+
                     print(f"Weight: {Weight}")
 
                 elif label.startswith("Reach"):
                     Reach = info.find("i").next_sibling.strip()
+                    if Reach == "--":
+                        Reach = None
+                    else: 
+                        for char in ['/','"']:
+                            Reach = Reach.replace(char,"")
+                        Reach = int(Reach)
                     print(f"Reach: {Reach}")
 
                 elif label.startswith("STANCE"):
                     Stance = info.find("i").next_sibling.strip()
+                    if Stance == "--":
+                        Stance = None
+                    elif Stance == "Orthodox":
+                        Stance = 1
+                    else:
+                        Stance = 0
                     print(f"Stance: {Stance}")
                 
                 elif label.startswith("DOB"):
@@ -108,7 +131,7 @@ def fetch_stats():
                         if (today.month, today.day) < (birth_date.month, birth_date.day):
                             age -= 1
                     except Exception:
-                        age = "--"
+                        age = None
                     print(f"Age: {age}")
 
         fighter_info = {
