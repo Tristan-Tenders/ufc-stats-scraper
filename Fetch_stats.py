@@ -182,7 +182,8 @@ def fetch_stats():
                     Stats["SubAvg"] = float(value)
                     print(f"Sub. Avg.: {Stats['SubAvg']}")
             
-            RecentFights = fetch_recent_fights(soup, max_fights=3)
+            fetch_recent_fight = fetch_recent_fights(soup, max_fights=3)
+
 
         fighter_info = {
             "Name": Name,
@@ -192,7 +193,7 @@ def fetch_stats():
             "Stance": Stance,
             "Age": age,
             "CareerStats": Stats,
-            "RecentFights": RecentFights,
+            "RecentFights": fetch_recent_fight,
         }
         append_fighter(fighter_info)
         
