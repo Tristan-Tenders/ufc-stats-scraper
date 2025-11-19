@@ -70,8 +70,10 @@ links=[
   "http://ufcstats.com/fighter-details/dde70a112e053a6c",
   "http://ufcstats.com/fighter-details/e56daf7725a0b5ab"]
 def fetch_stats():
+    
     # with open("Stats/fighter_links.json","r") as f:
     #     links = json.load(f)
+
     for link in links:
         soup = fetch_page(link)
         if soup:
