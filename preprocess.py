@@ -1,7 +1,5 @@
 import json
 import pandas as pd
-
-# 1️⃣ Load your JSON file with all fighters
 with open("stats/fighter_stats.json", "r") as f:
     fighters = json.load(f)
 

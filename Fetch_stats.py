@@ -184,6 +184,8 @@ def fetch_stats():
                     Stats["SubAvg"] = float(value)
                     print(f"Sub. Avg.: {Stats['SubAvg']}")
             
+
+            
             fetch_recent_fight = fetch_recent_fights(soup, max_fights=3)
 
 
@@ -197,7 +199,12 @@ def fetch_stats():
             "CareerStats": Stats,
             "RecentFights": fetch_recent_fight,
         }
-        append_fighter(fighter_info)
+
+        if any(v is None for v in fighter_info.values()):
+            pass
+        
+        else: 
+            append_fighter(fighter_info)
         
 
 if __name__ == "__main__":
