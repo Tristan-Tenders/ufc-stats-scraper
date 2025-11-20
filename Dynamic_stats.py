@@ -11,7 +11,8 @@ def fetch_recent_fights(soup, max_fights=3):
     )
 
     all_fights = []
-
+    if len(rows) < max_fights:
+        return None
     for row in rows[:max_fights]:
         result_text = row.find_all("td")[0].get_text(strip=True).lower()
         result = 1 if result_text == "win" else 0
