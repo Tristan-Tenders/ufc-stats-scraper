@@ -1,16 +1,16 @@
 import numpy as np
+from sklearn.ensemble import RandomForestClassifier
 from utils import load_ufc_data, split_data, print_class_balance
-from random_forest import RandomForest
 
 
 def evaluate(preds: np.array, Y_test: np.array) -> None:
     accuracy = (preds == Y_test).mean()
-    print(f"\nTest accuracy: {accuracy:.3f}")
+    print(f"\ntest accuracy: {accuracy:.3f}")
 
     for cls in np.unique(Y_test):
         mask = Y_test == cls
         cls_acc = (preds[mask] == Y_test[mask]).mean()
-        print(f"  Class {cls} accuracy: {cls_acc:.3f}  ({mask.sum()} samples)")
+        print(f"  class {cls}: {cls_acc:.3f}  ({mask.sum()} samples)")
 
 
 def main():
@@ -24,13 +24,14 @@ def main():
     print_class_balance(Y_train, "train")
 
     print("\ntraining...")
-    rf = RandomForest(
-        n_base_learner=100,
-        numb_of_features_splitting=7,
+    rf = RandomForestClassifier(
+        n_estimators=100,
+        max_features=7,
         max_depth=8,
         min_samples_leaf=5,
+        n_jobs=-1,
     )
-    rf.train(X_train, Y_train)
+    rf.fit(X_train, Y_train)
     print("done.")
 
     preds = rf.predict(X_test)
