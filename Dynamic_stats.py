@@ -1,3 +1,30 @@
+import time
+import random
+
+
+def parse_stat(stat_text, winner_idx=0):
+    stat_text = stat_text.strip()
+    if "%" in stat_text:
+        parts = [p.strip() for p in stat_text.split("%") if p]
+        try:
+            return float(parts[winner_idx])
+        except Exception:
+            return 0.0
+    elif " of " in stat_text:
+        try:
+            parts = stat_text.split(" of ")
+            landed = int(parts[winner_idx])
+            total = int(parts[1]) if len(parts) > 1 else 1
+            return round((landed / total) * 100, 1) if total != 0 else 0.0
+        except Exception:
+            return 0.0
+    else:
+        try:
+            return float(stat_text)
+        except Exception:
+            return 0.0
+
+
 def fetch_recent_fights(soup, max_fights=3):
     from Fetch_stats import fetch_page
 
@@ -10,9 +37,10 @@ def fetch_recent_fights(soup, max_fights=3):
         class_="b-fight-details__table-row b-fight-details__table-row__hover js-fight-details-click"
     )
 
-    all_fights = []
     if len(rows) < max_fights:
         return None
+
+    all_fights = []
     for row in rows[:max_fights]:
         result_text = row.find_all("td")[0].get_text(strip=True).lower()
         result = 1 if result_text == "win" else 0
@@ -24,6 +52,8 @@ def fetch_recent_fights(soup, max_fights=3):
         fight_soup = fetch_page(fight_link)
         if not fight_soup:
             continue
+        time.sleep(random.uniform(1.3, 2))
+
         sig_table = None
         for table in fight_soup.find_all("table"):
             prev_section = table.find_previous("section")
@@ -46,28 +76,6 @@ def fetch_recent_fights(soup, max_fights=3):
             if not fighter_link:
                 continue
             fighter_name = fighter_link.get_text(strip=True)
-
-            def parse_stat(stat_text, winner_idx=0):
-                stat_text = stat_text.strip()
-                if "%" in stat_text:
-                    parts = [p.strip() for p in stat_text.split("%") if p]
-                    try:
-                        return float(parts[winner_idx])
-                    except:
-                        return 0.0
-                elif " of " in stat_text:
-                    try:
-                        parts = stat_text.split(" of ")
-                        landed = int(parts[winner_idx])
-                        total = int(parts[1]) if len(parts) > 1 else 1
-                        return round((landed / total) * 100, 1) if total != 0 else 0.0
-                    except:
-                        return 0.0
-                else:
-                    try:
-                        return float(stat_text)
-                    except:
-                        return 0.0
 
             stats = {
                 "Sig. str %": parse_stat(cols[1].get_text(strip=True)),

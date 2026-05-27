@@ -1,3 +1,5 @@
 /venv
 /stats
 /__pycache__
+/.claude
+env
