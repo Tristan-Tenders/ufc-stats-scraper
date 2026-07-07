@@ -3,3 +3,10 @@
 /__pycache__
 /.claude
 env
+__pycache__/
+env/
+.DS_Store
+stats/model_cache.pkl
+site/img/
+stats/raw/scrape_errors.log
+_test_mv/

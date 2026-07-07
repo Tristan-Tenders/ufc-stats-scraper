@@ -1,6 +1,9 @@
 requests
 beautifulsoup4
 lxml
-pandas
 numpy
+pandas
 scikit-learn
+tqdm
+fastapi
+uvicorn

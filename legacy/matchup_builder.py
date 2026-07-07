@@ -1,3 +1,6 @@
+# DEPRECATED: synthetic pairwise matchups with leaked labels.
+# Use build_dataset.py instead (real fight outcomes, as-of-date features).
+
 import csv
 import json
 import os

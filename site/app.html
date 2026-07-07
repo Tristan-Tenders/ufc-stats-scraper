@@ -1,0 +1,233 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fight Predictions — Live</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--red:#ff5c69;--blue:#4d9fff;--green:#2ee6a8;--ink:#e8ecf4}
+*{box-sizing:border-box}
+body{font-family:'Inter',-apple-system,sans-serif;color:var(--ink);margin:0;
+background:radial-gradient(1100px 500px at 50% -10%,#182135 0%,#0b0e14 60%) fixed #0b0e14}
+.topbar{background:rgba(11,14,20,.72);backdrop-filter:blur(14px);
+border-bottom:1px solid rgba(255,255,255,.07);padding:16px 24px;position:sticky;
+top:0;z-index:10;display:flex;align-items:baseline;gap:14px}
+.topbar h1{margin:0;font-size:20px;font-weight:700}
+.topbar h1 span{background:linear-gradient(90deg,var(--red),var(--blue));
+-webkit-background-clip:text;background-clip:text;color:transparent}
+.topbar nav{margin-left:auto;display:flex;gap:6px}
+.topbar nav button{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+color:#aab6c8;padding:6px 16px;border-radius:20px;cursor:pointer;font:inherit;font-size:13px}
+.topbar nav button.on{background:rgba(46,230,168,.15);border-color:rgba(46,230,168,.4);color:var(--green)}
+.wrap{max-width:920px;margin:auto;padding:24px 16px 48px}
+.panel{background:rgba(255,255,255,.038);border:1px solid rgba(255,255,255,.08);
+border-radius:18px;padding:22px 24px;margin:16px 0;backdrop-filter:blur(12px)}
+.pickrow{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.pickrow input{flex:1;min-width:180px;background:rgba(255,255,255,.06);
+border:1px solid rgba(255,255,255,.12);border-radius:12px;color:var(--ink);
+padding:12px 16px;font:inherit;font-size:15px}
+.pickrow .vs{color:#5d6a80;font-weight:600;letter-spacing:2px;font-size:12px}
+.pickrow button{background:linear-gradient(90deg,var(--red),#c2374a);border:0;
+color:#fff;font:inherit;font-weight:700;padding:12px 26px;border-radius:12px;cursor:pointer}
+.pickrow label{color:#7d8aa0;font-size:13px;display:flex;gap:6px;align-items:center}
+.matchup{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:8px}
+.corner{flex:1;text-align:center}
+.disc{width:88px;height:88px;border-radius:24px;background:#161b26;
+display:flex;align-items:center;justify-content:center;font-size:30px;
+font-weight:800;color:#7d8aa0;border:2px solid rgba(255,255,255,.12);margin:auto}
+.corner.r .disc{box-shadow:0 0 0 2px rgba(255,92,105,.5);color:var(--red)}
+.corner.b .disc{box-shadow:0 0 0 2px rgba(77,159,255,.5);color:var(--blue)}
+.corner.winner .disc{box-shadow:0 0 0 2px var(--green),0 0 26px rgba(46,230,168,.35);color:var(--green)}
+.whyrow{display:flex;gap:10px;align-items:baseline;padding:7px 4px;
+border-bottom:1px solid rgba(255,255,255,.05);font-size:13.5px}
+.whyrow .expl{flex:1;color:#aab6c8;line-height:1.45}
+.whyrow .who{white-space:nowrap;font-weight:600;font-variant-numeric:tabular-nums}
+.whyrow .who.r{color:var(--red)}.whyrow .who.b{color:var(--blue)}
+.whyrow .who.even{color:#7d8aa0}
+.whyrow .trust{flex:0 0 56px;height:5px;border-radius:3px;
+background:rgba(255,255,255,.08);align-self:center;overflow:hidden}
+.whyrow .trust i{display:block;height:100%;background:var(--green)}
+.fname{font-size:17px;font-weight:700;margin-top:10px}
+.frec{color:#7d8aa0;font-size:12px;margin-top:3px}
+.wtag{color:var(--green);font-size:11px;letter-spacing:1.4px;text-transform:uppercase;
+margin-top:5px;min-height:14px;font-weight:600}
+.center{flex:0 0 150px;text-align:center}
+.vsbig{font-size:12px;color:#5d6a80;letter-spacing:3px;font-weight:600}
+.bigpct{font-size:36px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-1px}
+.bigpct .r{color:var(--red)}.bigpct .b{color:var(--blue)}.bigpct .sep{color:#3a4356;font-size:22px}
+.barwrap{background:rgba(255,255,255,.06);height:8px;margin-top:16px;display:flex;
+border-radius:8px;overflow:hidden}
+.bar{background:linear-gradient(90deg,#c2374a,var(--red));transition:flex-basis .6s}
+.bar2{background:linear-gradient(90deg,var(--blue),#2b6fd4);transition:flex-basis .6s}
+.chips{display:flex;justify-content:center;gap:8px;margin-top:14px;flex-wrap:wrap}
+.chip{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);
+color:#aab6c8;font-size:12px;padding:4px 14px;border-radius:20px}
+.chip b{color:var(--ink)}
+.chip.market{border-color:rgba(46,230,168,.3);color:var(--green)}
+details{margin-top:14px}summary{color:#7d8aa0;font-size:13px;cursor:pointer}
+table{width:100%;border-collapse:collapse;margin-top:8px;font-size:13px}
+td{padding:4px 8px;border-bottom:1px solid rgba(255,255,255,.05);color:#aab6c8}
+td.num{text-align:right;font-variant-numeric:tabular-nums;color:var(--ink)}
+.wbar{display:inline-block;height:6px;background:var(--green);border-radius:3px;vertical-align:middle}
+.err{color:var(--red);padding:10px 0}
+.muted{color:#5d6a80;font-size:13px}
+h2{font-size:22px;font-weight:800;margin:26px 0 4px}
+.eventsub{color:#7d8aa0;font-size:13px;margin-bottom:6px}
+footer{color:#5d6a80;font-size:12.5px;margin-top:40px;line-height:1.6}
+@media(max-width:640px){.disc{width:64px;height:64px;font-size:22px}
+.center{flex-basis:96px}.bigpct{font-size:26px}.fname{font-size:14px}}
+</style></head><body>
+<div class="topbar"><h1>Fight <span>Predictions</span> Live</h1>
+<nav><button id="tab-vs" class="on" onclick="showTab('vs')">Matchup</button>
+<button id="tab-up" onclick="showTab('up')">Upcoming card</button></nav></div>
+<div class="wrap">
+
+<div id="view-vs">
+  <div class="panel">
+    <div class="pickrow">
+      <input id="fa" list="dl-a" placeholder="Red corner — type a name...">
+      <datalist id="dl-a"></datalist>
+      <span class="vs">VS</span>
+      <input id="fb" list="dl-b" placeholder="Blue corner...">
+      <datalist id="dl-b"></datalist>
+      <button onclick="predict()">Predict</button>
+      <label><input type="checkbox" id="mkt"> live market</label>
+    </div>
+    <div class="muted" id="vs-status"></div>
+  </div>
+  <div id="result"></div>
+</div>
+
+<div id="view-up" style="display:none">
+  <div class="muted" id="up-status">loading upcoming card...</div>
+  <div id="upcoming"></div>
+</div>
+
+<footer>Unofficial fan project — statistical estimates, not betting advice.
+Probabilities are isotonic-calibrated when the server runs a full fit.</footer>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const pct = p => (p*100).toFixed(0)+"%";
+const EXPLAIN = {
+ "form & momentum":"Recent results and win streaks",
+ "activity & layoff":"How recently and how often they've fought (ring rust)",
+ "physical & age":"Age, height and reach advantages",
+ "striking":"Striking volume, accuracy and defense",
+ "grappling":"Takedowns, control time and submission attempts",
+ "matchup history":"Head-to-head history and shared past opponents",
+ "opponent quality":"How strong the opposition they've faced has been",
+ "durability & finish":"Finishing power versus ability to absorb damage",
+ "camp quality":"How well fighters from their gym have been winning",
+ "cardio & fade":"Whether they keep up their pace in later rounds",
+ "momentum quality":"How good the opponents in their recent wins were",
+ "damage mileage":"Career damage absorbed and recent knockout losses",
+ "style matchup":"Each fighter's offense measured against the other's defense",
+ "finish threat":"KO and submission power versus the other's record of being finished",
+ "experience & pace":"Octagon experience and how long their fights usually last",
+ "stance & prime":"Southpaw/orthodox matchup, prime-age window and ring rust",
+ "cage & venue":"Small-cage (Apex) effects that help grapplers",
+ "elo rating":"Overall skill rating built from every past result",
+ "glicko rating":"Skill rating that trusts stale or thin records less",
+ "gbm monotonic":"A machine-learning model with common-sense rules built in",
+ "ml (all stats)":"The full machine-learning model using every statistic at once"};
+const initials = n => n.split(" ").map((w,i,a)=>i===0||i===a.length-1?w[0]:"").join("").toUpperCase();
+
+function showTab(t){
+  $("view-vs").style.display = t==="vs" ? "" : "none";
+  $("view-up").style.display = t==="up" ? "" : "none";
+  $("tab-vs").className = t==="vs" ? "on":"";
+  $("tab-up").className = t==="up" ? "on":"";
+  if(t==="up" && !$("upcoming").innerHTML) loadUpcoming();
+}
+
+async function suggest(inputId, dlId){
+  const q = $(inputId).value;
+  if(q.length < 2) return;
+  const r = await fetch(`/api/fighters?q=${encodeURIComponent(q)}`);
+  if(!r.ok) return;
+  const names = (await r.json()).map(f=>f.name);
+  $(dlId).innerHTML = names.map(n=>`<option value="${n}">`).join("");
+}
+$("fa").addEventListener("input", ()=>suggest("fa","dl-a"));
+$("fb").addEventListener("input", ()=>suggest("fb","dl-b"));
+$("fb").addEventListener("keydown", e=>{if(e.key==="Enter")predict()});
+
+function corner(f, side, isWinner, p){
+  return `<div class="corner ${side}${isWinner?" winner":""}">
+    <div class="disc">${initials(f.name||"?")}</div>
+    <div class="fname">${f.name}</div>
+    <div class="frec">${f.record||""} · ELO ${f.elo||"—"}</div>
+    <div class="wtag">${isWinner?`predicted winner · ${pct(p)}`:""}</div></div>`;
+}
+
+function fightCard(d){
+  if(d.error) return `<div class="panel"><div class="matchup">
+    ${corner(d.a,"r",false,0)}<div class="center"><div class="vsbig">VS</div></div>
+    ${corner(d.b,"b",false,0)}</div><div class="err">${d.error}</div></div>`;
+  const p = d.p_a, w1 = p >= .5;
+  const method = Object.entries(d.method||{}).sort((x,y)=>y[1]-x[1])[0];
+  const mlabels = {dec:"Decision", ko:"KO/TKO", sub:"Submission"};
+  let chips = "";
+  if(method) chips += `<span class="chip">likely finish: <b>${mlabels[method[0]]||method[0]} ${pct(method[1])}</b></span>`;
+  for(const [src,mp] of Object.entries(d.market||{}))
+    chips += `<span class="chip market">${src}: <b>${pct(mp)}</b> ${d.a.name.split(" ").pop()}</span>`;
+  const mvals = Object.values(d.market||{});
+  if(mvals.length){
+    const edge = p - mvals.reduce((a,b)=>a+b,0)/mvals.length;
+    chips += `<span class="chip market">model edge <b>${(edge>=0?"+":"")+(edge*100).toFixed(1)}%</b></span>`;
+  }
+  const lastA = d.a.name.split(" ").pop(), lastB = d.b.name.split(" ").pop();
+  const maxW = Math.max(...Object.values(d.weights||{}).map(Math.abs), 0.01);
+  const rows = Object.entries(d.strategies||{})
+    .sort((x,y)=>Math.abs(d.weights?.[y[0]]||0)-Math.abs(d.weights?.[x[0]]||0))
+    .map(([k,v])=>{
+      const expl = EXPLAIN[k]||k;
+      const who = Math.abs(v-.5)<.015 ? `<span class="who even">even</span>`
+        : v>=.5 ? `<span class="who r">${lastA} ${pct(v)}</span>`
+                : `<span class="who b">${lastB} ${pct(1-v)}</span>`;
+      const trust = Math.abs(d.weights?.[k]||0)/maxW*100;
+      return `<div class="whyrow"><span class="expl">${expl}</span>${who}
+        <span class="trust"><i style="width:${trust.toFixed(0)}%"></i></span></div>`;
+    }).join("");
+  return `<div class="panel">
+    <div class="matchup">
+      ${corner(d.a,"r",w1,p)}
+      <div class="center"><div class="vsbig">VS</div>
+        <div class="bigpct"><span class="r">${(p*100).toFixed(0)}</span><span class="sep">–</span><span class="b">${((1-p)*100).toFixed(0)}</span></div></div>
+      ${corner(d.b,"b",!w1,1-p)}
+    </div>
+    <div class="barwrap"><div class="bar" style="flex-basis:${p*100}%"></div><div class="bar2" style="flex-basis:${(1-p)*100}%"></div></div>
+    <div class="chips">${chips}</div>
+    <details><summary>why these odds — each angle, who it favors, and how much the model trusts it</summary>
+      ${rows}
+      <div class="muted">${d.calibrated?"probabilities are calibrated (70% means it wins ~70% of the time)":"fast fit — uncalibrated numbers, run the full pipeline for real ones"}</div>
+    </details></div>`;
+}
+
+async function predict(){
+  const a=$("fa").value.trim(), b=$("fb").value.trim();
+  if(!a||!b){$("vs-status").textContent="enter two fighters";return}
+  $("vs-status").textContent = "predicting...";
+  const mk = $("mkt").checked ? "&market=1":"";
+  try{
+    const r = await fetch(`/api/predict?a=${encodeURIComponent(a)}&b=${encodeURIComponent(b)}${mk}`);
+    if(!r.ok){ $("vs-status").textContent = (await r.json()).detail || "error"; return }
+    $("result").innerHTML = fightCard(await r.json());
+    $("vs-status").textContent = "";
+  }catch(e){ $("vs-status").textContent = "server error: "+e }
+}
+
+async function loadUpcoming(){
+  try{
+    const r = await fetch("/api/upcoming");
+    if(!r.ok){ $("up-status").textContent = (await r.json()).detail || "error"; return }
+    const d = await r.json();
+    $("up-status").textContent = "";
+    $("upcoming").innerHTML = `<h2>${d.event}</h2>
+      <div class="eventsub">${d.date} · ${d.location}</div>` +
+      d.fights.map(fightCard).join("");
+  }catch(e){ $("up-status").textContent = "server error: "+e }
+}
+</script>
+</body></html>

@@ -1,34 +1,8 @@
 import json
 import os
-import random
-import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-import requests
-from bs4 import BeautifulSoup
-
-USER_AGENTS = [
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15",
-    "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:125.0) Gecko/20100101 Firefox/125.0",
-]
-
-
-def fetch_page(url: str):
-    for _ in range(3):
-        try:
-            response = requests.get(
-                url,
-                headers={"User-Agent": random.choice(USER_AGENTS)},
-                timeout=10,
-            )
-            if response.status_code == 200:
-                return BeautifulSoup(response.text, "lxml")
-            print(f"[!] {response.status_code} for {url}")
-        except requests.RequestException as e:
-            print(f"[!] {e}")
-        time.sleep(random.uniform(1, 3))
-    return None
+from scrapers.fetch_fights import fetch_soup as fetch_page  # PoW-aware fetcher
 
 
 def fetch_links_for_letter(letter: str) -> list[str]:

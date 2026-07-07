@@ -6,40 +6,11 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import date, datetime
 from threading import Lock
 
-import requests
-from bs4 import BeautifulSoup
-
-from Dynamic_stats import fetch_recent_fights
+from legacy.Dynamic_stats import fetch_recent_fights
+from scrapers.fetch_fights import fetch_soup as fetch_page  # PoW-aware fetcher
 
 _file_lock = Lock()
 _error_lock = Lock()
-
-USER_AGENTS = [
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15",
-    "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:125.0) Gecko/20100101 Firefox/125.0",
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:124.0) Gecko/20100101 Firefox/124.0",
-    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Edg/122.0.0.0",
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.3 Safari/605.1.15",
-]
-
-REFERERS = [
-    "https://www.google.com/",
-    "https://www.bing.com/",
-    "https://duckduckgo.com/",
-    "https://www.reddit.com/",
-]
-
-
-def build_headers():
-    return {
-        "User-Agent": random.choice(USER_AGENTS),
-        "Accept-Language": "en-US,en;q=0.9",
-        "Referer": random.choice(REFERERS),
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-        "Connection": "keep-alive",
-    }
 
 
 def log_error(url: str, reason: str, path: str = "stats/failed_links.json") -> None:
@@ -56,35 +27,6 @@ def log_error(url: str, reason: str, path: str = "stats/failed_links.json") -> N
         errors.append({"url": url, "reason": reason})
         with open(path, "w") as f:
             json.dump(errors, f, indent=2)
-
-
-def fetch_page(url: str, tries: int = 5):
-    backoff = 2
-
-    for attempt in range(tries):
-        try:
-            headers = build_headers()
-            response = requests.get(url, headers=headers, timeout=10)
-
-            if response.status_code == 200:
-                return BeautifulSoup(response.text, "lxml")
-
-            elif response.status_code in (429, 403):
-                wait = backoff * (2 ** attempt) + random.uniform(1, 3)
-                print(f"[!] {response.status_code} blocked on attempt {attempt + 1} — waiting {wait:.1f}s then retrying with new headers")
-                time.sleep(wait)
-
-            else:
-                print(f"[!] {response.status_code} for {url}")
-                time.sleep(random.uniform(1, 3))
-
-        except requests.RequestException as e:
-            print(f"[!] Connection error: {e}")
-            time.sleep(random.uniform(1, 3))
-
-    log_error(url, f"Failed after {tries} attempts")
-    print(f"[!] Giving up on {url}")
-    return None
 
 
 def append_fighter(fighter_info, file_path="stats/fighter_stats.json"):
